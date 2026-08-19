@@ -11,9 +11,9 @@ export interface Bounds {
 
 const PADDING = 1.05;
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 4;
+const MAX_ZOOM = 8;
 const ZOOM_SPEED = 1.0045;
-const DEFAULT_ZOOM = 2;
+const DEFAULT_ZOOM = 2.5;
 
 export function MapCamera({ bounds }: { bounds: Bounds | null }) {
     const size = useThree((state) => state.size);
