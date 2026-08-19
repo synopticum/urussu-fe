@@ -125,26 +125,57 @@ function CircleObjectShape({ object }: { object: MapObject }) {
     );
 }
 
+// Corner rounding for polygon objects, in world units (degrees): each vertex
+// is trimmed back along both adjacent edges and replaced by a curve, like a
+// CSS border-radius. Clamped per corner to half of the shorter adjacent edge
+// so rounding on tiny or sliver polygons never overlaps itself.
+const CORNER_RADIUS = 0.05;
+
+function roundedPolygonShape(points: Vector2[]): Shape {
+    const n = points.length;
+    const trims = points.map((p, i) => {
+        const prev = points[(i - 1 + n) % n];
+        const next = points[(i + 1) % n];
+        return Math.min(CORNER_RADIUS, p.distanceTo(prev) / 2, p.distanceTo(next) / 2);
+    });
+
+    const shape = new Shape();
+    for (let i = 0; i < n; i++) {
+        const p = points[i];
+        const prev = points[(i - 1 + n) % n];
+        const next = points[(i + 1) % n];
+        const t = trims[i];
+        // Arc endpoints: t back along the incoming edge, t along the outgoing
+        const start = p.clone().add(prev.clone().sub(p).setLength(t));
+        const end = p.clone().add(next.clone().sub(p).setLength(t));
+        if (i === 0) shape.moveTo(start.x, start.y);
+        else shape.lineTo(start.x, start.y);
+        // Quadratic curve with the original vertex as control point: tangent
+        // to both edges at the trim points, so the outline stays smooth
+        shape.quadraticCurveTo(p.x, p.y, end.x, end.y);
+    }
+    shape.closePath();
+    return shape;
+}
+
 function PolygonObjectShape({ object }: { object: MapObject }) {
     const [hovered, setHovered] = useState(false);
-    // A single line loop connects the points in array order and closes first-to-last
-    const geometry = useMemo(() => {
+
+    const shape = useMemo(() => {
         const points = object.coordinates.map((c) => {
             const [x, y] = toWorld(c.longitude, c.latitude);
-            return new Vector3(x, y, 0);
+            return new Vector2(x, y);
         });
-        return new BufferGeometry().setFromPoints(points);
+        return roundedPolygonShape(points);
     }, [object]);
 
-    const fillGeometry = useMemo(() => {
-        const shape = new Shape(
-            object.coordinates.map((c) => {
-                const [x, y] = toWorld(c.longitude, c.latitude);
-                return new Vector2(x, y);
-            }),
-        );
-        return new ShapeGeometry(shape);
-    }, [object]);
+    // A single line loop follows the rounded outline and closes first-to-last
+    const geometry = useMemo(() => {
+        const points = shape.getPoints(12).map((p) => new Vector3(p.x, p.y, 0));
+        return new BufferGeometry().setFromPoints(points);
+    }, [shape]);
+
+    const fillGeometry = useMemo(() => new ShapeGeometry(shape), [shape]);
 
     return (
         <group>
