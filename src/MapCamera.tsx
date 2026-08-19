@@ -67,5 +67,56 @@ export function MapCamera({ bounds }: { bounds: Bounds | null }) {
         return () => el.removeEventListener('wheel', onWheel);
     }, [gl, camera]);
 
+    // Drag to pan: move the camera opposite the pointer, converting pixels to world units.
+    // The visible area is clamped to the padded bounds so you can't drag the map off-screen.
+    useEffect(() => {
+        const el = gl.domElement;
+        let lastX = 0;
+        let lastY = 0;
+
+        const onPointerDown = (e: PointerEvent) => {
+            if (e.button !== 0) return;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            el.setPointerCapture(e.pointerId);
+            el.style.cursor = 'grabbing';
+        };
+
+        const onPointerMove = (e: PointerEvent) => {
+            if (!(camera instanceof OrthographicCamera) || !bounds || !el.hasPointerCapture(e.pointerId)) return;
+
+            const worldPerPixel = (camera.right - camera.left) / camera.zoom / el.clientWidth;
+            camera.position.x -= (e.clientX - lastX) * worldPerPixel;
+            camera.position.y += (e.clientY - lastY) * worldPerPixel;
+            lastX = e.clientX;
+            lastY = e.clientY;
+
+            // Keep the whole viewport inside the padded bounds; if the viewport is
+            // wider/taller than the bounds (zoomed out), pin it to the bounds center
+            const halfW = ((camera.right - camera.left) / camera.zoom) * 0.5;
+            const halfH = ((camera.top - camera.bottom) / camera.zoom) * 0.5;
+            const cx = (bounds.minX + bounds.maxX) / 2;
+            const cy = (bounds.minY + bounds.maxY) / 2;
+            const padW = ((bounds.maxX - bounds.minX) * PADDING) / 2;
+            const padH = ((bounds.maxY - bounds.minY) * PADDING) / 2;
+            camera.position.x = padW > halfW ? MathUtils.clamp(camera.position.x, cx - padW + halfW, cx + padW - halfW) : cx;
+            camera.position.y = padH > halfH ? MathUtils.clamp(camera.position.y, cy - padH + halfH, cy + padH - halfH) : cy;
+        };
+
+        const onPointerUp = (e: PointerEvent) => {
+            if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+            el.style.cursor = '';
+        };
+
+        el.addEventListener('pointerdown', onPointerDown);
+        el.addEventListener('pointermove', onPointerMove);
+        el.addEventListener('pointerup', onPointerUp);
+        return () => {
+            el.removeEventListener('pointerdown', onPointerDown);
+            el.removeEventListener('pointermove', onPointerMove);
+            el.removeEventListener('pointerup', onPointerUp);
+        };
+    }, [gl, camera, bounds]);
+
     return null;
 }
