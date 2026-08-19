@@ -11,8 +11,9 @@ export interface Bounds {
 
 const PADDING = 1.05;
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 100;
+const MAX_ZOOM = 4;
 const ZOOM_SPEED = 1.0015;
+const DEFAULT_ZOOM = 2;
 
 export function MapCamera({ bounds }: { bounds: Bounds | null }) {
     const size = useThree((state) => state.size);
@@ -38,6 +39,7 @@ export function MapCamera({ bounds }: { bounds: Bounds | null }) {
         camera.right = halfW;
         camera.top = halfH;
         camera.bottom = -halfH;
+        camera.zoom = DEFAULT_ZOOM;
         camera.updateProjectionMatrix();
     }, [bounds, size, camera]);
 
@@ -58,6 +60,7 @@ export function MapCamera({ bounds }: { bounds: Bounds | null }) {
 
             camera.zoom = next;
             camera.updateProjectionMatrix();
+            console.log('zoom:', next);
 
             const after = ndc.clone().unproject(camera);
             camera.position.add(before.sub(after));

@@ -85,8 +85,8 @@ export default function App() {
                     position={[...toWorld(dot.coordinates[1], dot.coordinates[0]), 0]}
                     onClick={() => console.log(dot)}
                 >
-                    <circleGeometry args={[0.25, 32]} />
-                    <meshBasicMaterial color="black" />
+                    <circleGeometry args={[0.125, 32]} />
+                    <meshBasicMaterial color="darkorange" />
                 </mesh>
             ))}
             {objects.map((object) => (
