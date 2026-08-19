@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, Suspense, type ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { BufferGeometry, Color, EllipseCurve, Line, LineDashedMaterial, MeshBasicMaterial, ShaderMaterial, Shape, ShapeGeometry, Vector2, Vector3 } from 'three';
+import { BufferGeometry, Color, EllipseCurve, Line, LineDashedMaterial, MeshBasicMaterial, Path as ThreePath, ShaderMaterial, Shape, ShapeGeometry, Vector2, Vector3 } from 'three';
 import { fetchDots, fetchObjects, fetchPaths, type Dot, type MapObject, type Path } from './api';
 import { MapCamera, type Bounds } from './MapCamera';
 import { TileLayer } from './TileLayer';
@@ -125,36 +125,66 @@ function CircleObjectShape({ object }: { object: MapObject }) {
     );
 }
 
-// Corner rounding for polygon objects, in world units (degrees): each vertex
-// is trimmed back along both adjacent edges and replaced by a curve, like a
-// CSS border-radius. Clamped per corner to half of the shorter adjacent edge
-// so rounding on tiny or sliver polygons never overlaps itself.
+// Corner rounding, in world units (degrees): each vertex is trimmed back
+// along both adjacent edges and replaced by a curve, like a CSS
+// border-radius. Clamped per corner to half of the shorter adjacent edge
+// so rounding on tiny or sliver shapes never overlaps itself. Polygons and
+// paths use different radii.
 const CORNER_RADIUS = 0.05;
+const PATH_CORNER_RADIUS = 0.25;
 
-function roundedPolygonShape(points: Vector2[]): Shape {
+// Appends the points to `path` with every vertex rounded. When closed, the
+// first/last vertex is rounded too and the path is closed; otherwise the two
+// endpoints stay sharp. Quadratic curves with the original vertex as control
+// point are tangent to both edges at the trim points, so the path stays smooth.
+function buildRoundedPath(path: ThreePath, points: Vector2[], radius: number, closed: boolean) {
     const n = points.length;
-    const trims = points.map((p, i) => {
-        const prev = points[(i - 1 + n) % n];
-        const next = points[(i + 1) % n];
-        return Math.min(CORNER_RADIUS, p.distanceTo(prev) / 2, p.distanceTo(next) / 2);
-    });
+    if (n === 0) return;
+    if (n < 3) {
+        path.moveTo(points[0].x, points[0].y);
+        if (n === 2) path.lineTo(points[1].x, points[1].y);
+        return;
+    }
 
-    const shape = new Shape();
-    for (let i = 0; i < n; i++) {
+    const trimAt = (i: number) => {
         const p = points[i];
         const prev = points[(i - 1 + n) % n];
         const next = points[(i + 1) % n];
-        const t = trims[i];
-        // Arc endpoints: t back along the incoming edge, t along the outgoing
-        const start = p.clone().add(prev.clone().sub(p).setLength(t));
-        const end = p.clone().add(next.clone().sub(p).setLength(t));
-        if (i === 0) shape.moveTo(start.x, start.y);
-        else shape.lineTo(start.x, start.y);
-        // Quadratic curve with the original vertex as control point: tangent
-        // to both edges at the trim points, so the outline stays smooth
-        shape.quadraticCurveTo(p.x, p.y, end.x, end.y);
+        return Math.min(radius, p.distanceTo(prev) / 2, p.distanceTo(next) / 2);
+    };
+    // Arc endpoints: t back along the incoming edge, t along the outgoing
+    const arcStart = (i: number, t: number) =>
+        points[i].clone().add(points[(i - 1 + n) % n].clone().sub(points[i]).setLength(t));
+    const arcEnd = (i: number, t: number) =>
+        points[i].clone().add(points[(i + 1) % n].clone().sub(points[i]).setLength(t));
+
+    if (closed) {
+        const first = arcStart(0, trimAt(0));
+        path.moveTo(first.x, first.y);
+        for (let i = 0; i < n; i++) {
+            const t = trimAt(i);
+            const start = arcStart(i, t);
+            const end = arcEnd(i, t);
+            if (i > 0) path.lineTo(start.x, start.y);
+            path.quadraticCurveTo(points[i].x, points[i].y, end.x, end.y);
+        }
+        path.closePath();
+    } else {
+        path.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < n - 1; i++) {
+            const t = trimAt(i);
+            const start = arcStart(i, t);
+            const end = arcEnd(i, t);
+            path.lineTo(start.x, start.y);
+            path.quadraticCurveTo(points[i].x, points[i].y, end.x, end.y);
+        }
+        path.lineTo(points[n - 1].x, points[n - 1].y);
     }
-    shape.closePath();
+}
+
+function roundedPolygonShape(points: Vector2[]): Shape {
+    const shape = new Shape();
+    buildRoundedPath(shape, points, CORNER_RADIUS, true);
     return shape;
 }
 
@@ -204,13 +234,21 @@ function PolygonObjectShape({ object }: { object: MapObject }) {
 }
 
 function PathShape({ path }: { path: Path }) {
-    // An open line connects the points in array order; first and last are NOT joined.
+    // An open line connects the points in array order with rounded corners;
+    // first and last are NOT joined, and the two endpoints stay sharp.
     // computeLineDistances() is required for the dashed material to render dashes.
     const line = useMemo(() => {
-        const points = path.coordinates.map((c) => {
-            const [x, y] = toWorld(c.longitude, c.latitude);
-            return new Vector3(x, y, 0);
-        });
+        const rounded = new ThreePath();
+        buildRoundedPath(
+            rounded,
+            path.coordinates.map((c) => {
+                const [x, y] = toWorld(c.longitude, c.latitude);
+                return new Vector2(x, y);
+            }),
+            PATH_CORNER_RADIUS,
+            false,
+        );
+        const points = rounded.getPoints(12).map((p) => new Vector3(p.x, p.y, 0));
         const material = new LineDashedMaterial({ color: 'gray', dashSize: 0.25, gapSize: 0.125 });
         // Discard fragments inside the mouse "glass" circle, same as the
         // object fills: reads the shared reveal uniforms (see reveal.ts).
