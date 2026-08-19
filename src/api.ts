@@ -12,6 +12,8 @@ export interface MapObject {
     street: string;
     description: string;
     coordinates: { latitude: number; longitude: number }[];
+    // Present only on circular objects: a single center coordinate plus this radius
+    radius?: number;
 }
 
 export interface Path {

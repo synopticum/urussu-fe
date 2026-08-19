@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { BufferGeometry, Line, LineDashedMaterial, Shape, ShapeGeometry, Vector2, Vector3 } from 'three';
+import { BufferGeometry, EllipseCurve, Line, LineDashedMaterial, Shape, ShapeGeometry, Vector2, Vector3 } from 'three';
 import { fetchDots, fetchObjects, fetchPaths, type Dot, type MapObject, type Path } from './api';
 import { MapCamera, type Bounds } from './MapCamera';
 
@@ -12,7 +12,43 @@ function toWorld(longitude: number, latitude: number): [number, number] {
     return [longitude, Math.log(Math.tan(Math.PI / 4 + latRad / 2)) * (180 / Math.PI)];
 }
 
+// Radius values are in the thousands (meter-like); world units are degrees,
+// so scale them down to land in the same size range as dots and polygons.
+const RADIUS_SCALE = 4 / 111320; // ≈ 4x meters-per-degree of latitude
+
 function ObjectShape({ object }: { object: MapObject }) {
+    // Circular objects: one center coordinate + radius instead of a polygon
+    if (object.radius != null && object.coordinates.length === 1) {
+        return <CircleObjectShape object={object} />;
+    }
+    return <PolygonObjectShape object={object} />;
+}
+
+function CircleObjectShape({ object }: { object: MapObject }) {
+    const [cx, cy] = toWorld(object.coordinates[0].longitude, object.coordinates[0].latitude);
+    const radius = object.radius! * RADIUS_SCALE;
+
+    // Outline circle centered at the origin; the group positions it on the map
+    const geometry = useMemo(() => {
+        const points = new EllipseCurve(0, 0, radius, radius).getPoints(64);
+        return new BufferGeometry().setFromPoints(points);
+    }, [radius]);
+
+    return (
+        <group position={[cx, cy, 0]}>
+            <lineLoop geometry={geometry}>
+                <lineBasicMaterial color="gray" />
+            </lineLoop>
+            {/* Invisible filled mesh so clicks anywhere inside the circle register */}
+            <mesh onClick={() => console.log(object)}>
+                <circleGeometry args={[radius, 64]} />
+                <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+            </mesh>
+        </group>
+    );
+}
+
+function PolygonObjectShape({ object }: { object: MapObject }) {
     // A single line loop connects the points in array order and closes first-to-last
     const geometry = useMemo(() => {
         const points = object.coordinates.map((c) => {
