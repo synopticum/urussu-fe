@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState, Suspense, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, Suspense, type ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { BufferGeometry, Color, EllipseCurve, Line, LineDashedMaterial, MeshBasicMaterial, Path as ThreePath, ShaderMaterial, Shape, ShapeGeometry, Vector2, Vector3 } from 'three';
+import { BufferGeometry, Color, EllipseCurve, Line, LineDashedMaterial, MathUtils, Mesh, MeshBasicMaterial, Path as ThreePath, ShaderMaterial, Shape, ShapeGeometry, Vector2, Vector3 } from 'three';
 import { fetchDots, fetchObjects, fetchPaths, type Dot, type MapObject, type Path } from './api';
 import { MapCamera, type Bounds } from './MapCamera';
 import { TileLayer } from './TileLayer';
@@ -279,6 +279,38 @@ function PathShape({ path }: { path: Path }) {
     return <primitive object={line} />;
 }
 
+// Dot hover: the circle grows to DOT_HOVER_SCALE times its radius, ramping
+// linearly over the same HIGHLIGHT_FADE_MS the object highlight uses.
+const DOT_HOVER_SCALE = 3;
+
+function DotShape({ dot }: { dot: Dot }) {
+    const [hovered, setHovered] = useState(false);
+    const mesh = useRef<Mesh>(null);
+    const progress = useRef(0);
+
+    useFrame((_, delta) => {
+        const step = (delta * 1000) / HIGHLIGHT_FADE_MS;
+        progress.current = MathUtils.clamp(progress.current + (hovered ? step : -step), 0, 1);
+        mesh.current?.scale.setScalar(1 + (DOT_HOVER_SCALE - 1) * progress.current);
+    });
+
+    return (
+        <mesh
+            ref={mesh}
+            position={[...toWorld(dot.coordinates[1], dot.coordinates[0]), 0]}
+            onClick={() => console.log(dot)}
+            onPointerOver={(e) => {
+                e.stopPropagation();
+                setHovered(true);
+            }}
+            onPointerOut={() => setHovered(false)}
+        >
+            <circleGeometry args={[0.125, 32]} />
+            <meshBasicMaterial color="darkorange" />
+        </mesh>
+    );
+}
+
 export default function App() {
     const [dots, setDots] = useState<Dot[]>([]);
     const [objects, setObjects] = useState<MapObject[]>([]);
@@ -322,14 +354,7 @@ export default function App() {
                 <TileLayer />
             </Suspense>
             {dots.map((dot) => (
-                <mesh
-                    key={dot.id}
-                    position={[...toWorld(dot.coordinates[1], dot.coordinates[0]), 0]}
-                    onClick={() => console.log(dot)}
-                >
-                    <circleGeometry args={[0.125, 32]} />
-                    <meshBasicMaterial color="darkorange" />
-                </mesh>
+                <DotShape key={dot.id} dot={dot} />
             ))}
             {objects.map((object) => (
                 <ObjectShape key={object.id} object={object} />
