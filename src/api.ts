@@ -14,6 +14,11 @@ export interface MapObject {
     coordinates: { latitude: number; longitude: number }[];
 }
 
+export interface Path {
+    id: string;
+    coordinates: { latitude: number; longitude: number }[];
+}
+
 const API = 'http://localhost:8081/api/v1';
 
 async function login(): Promise<string> {
@@ -44,4 +49,14 @@ export async function fetchObjects(): Promise<MapObject[]> {
     });
     const data = await objectsRes.json();
     return Array.isArray(data) ? data : data.objects;
+}
+
+export async function fetchPaths(): Promise<Path[]> {
+    const token = await login();
+
+    const pathsRes = await fetch(`${API}/paths`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await pathsRes.json();
+    return Array.isArray(data) ? data : data.paths;
 }

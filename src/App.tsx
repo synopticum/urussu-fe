@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { BufferGeometry, Shape, ShapeGeometry, Vector2, Vector3 } from 'three';
-import { fetchDots, fetchObjects, type Dot, type MapObject } from './api';
+import { BufferGeometry, Line, LineDashedMaterial, Shape, ShapeGeometry, Vector2, Vector3 } from 'three';
+import { fetchDots, fetchObjects, fetchPaths, type Dot, type MapObject, type Path } from './api';
 import { MapCamera, type Bounds } from './MapCamera';
 
 // Web Mercator (EPSG:3857), same as Leaflet's default CRS: x = longitude,
@@ -45,13 +45,34 @@ function ObjectShape({ object }: { object: MapObject }) {
     );
 }
 
+function PathShape({ path }: { path: Path }) {
+    // An open line connects the points in array order; first and last are NOT joined.
+    // computeLineDistances() is required for the dashed material to render dashes.
+    const line = useMemo(() => {
+        const points = path.coordinates.map((c) => {
+            const [x, y] = toWorld(c.longitude, c.latitude);
+            return new Vector3(x, y, 0);
+        });
+        const result = new Line(
+            new BufferGeometry().setFromPoints(points),
+            new LineDashedMaterial({ color: 'gray', dashSize: 0.25, gapSize: 0.125 }),
+        );
+        result.computeLineDistances();
+        return result;
+    }, [path]);
+
+    return <primitive object={line} />;
+}
+
 export default function App() {
     const [dots, setDots] = useState<Dot[]>([]);
     const [objects, setObjects] = useState<MapObject[]>([]);
+    const [paths, setPaths] = useState<Path[]>([]);
 
     useEffect(() => {
         fetchDots().then(setDots).catch(console.error);
         fetchObjects().then(setObjects).catch(console.error);
+        fetchPaths().then(setPaths).catch(console.error);
     }, []);
 
     const bounds = useMemo<Bounds | null>(() => {
@@ -66,6 +87,9 @@ export default function App() {
         for (const object of objects) {
             for (const c of object.coordinates) push(c.longitude, c.latitude);
         }
+        for (const path of paths) {
+            for (const c of path.coordinates) push(c.longitude, c.latitude);
+        }
         if (xs.length === 0) return null;
         return {
             minX: Math.min(...xs),
@@ -73,7 +97,7 @@ export default function App() {
             minY: Math.min(...ys),
             maxY: Math.max(...ys),
         };
-    }, [dots, objects]);
+    }, [dots, objects, paths]);
 
     return (
         <Canvas orthographic>
@@ -91,6 +115,9 @@ export default function App() {
             ))}
             {objects.map((object) => (
                 <ObjectShape key={object.id} object={object} />
+            ))}
+            {paths.map((path) => (
+                <PathShape key={path.id} path={path} />
             ))}
         </Canvas>
     );
