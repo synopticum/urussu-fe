@@ -12,7 +12,7 @@ export interface Bounds {
 const PADDING = 1.05;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
-const ZOOM_SPEED = 1.0015;
+const ZOOM_SPEED = 1.0045;
 const DEFAULT_ZOOM = 2;
 
 export function MapCamera({ bounds }: { bounds: Bounds | null }) {
