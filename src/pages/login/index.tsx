@@ -12,12 +12,11 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="flex h-full w-full items-center justify-center bg-[#fffaf0] p-4">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-6 bg-[#fffaf0] p-4">
             <form
                 onSubmit={onSubmit}
                 className="flex w-full max-w-sm flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-8 shadow-sm"
             >
-                <h1 className="text-center text-xl font-semibold tracking-tight text-black">Sign in</h1>
                 <input
                     type="email"
                     placeholder="Email"
@@ -28,7 +27,7 @@ const LoginPage = () => {
                 />
                 <input
                     type="password"
-                    placeholder="Password"
+                    placeholder="Пароль"
                     required
                     value={password}
                     onChange={(e) => (state.password = e.target.value)}
@@ -39,7 +38,7 @@ const LoginPage = () => {
                     disabled={loading}
                     className="rounded-md bg-black px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    {loading ? 'Logging in…' : 'Log in'}
+                    {loading ? 'Входим…' : 'Войти'}
                 </button>
                 {error && <div className="text-center text-sm text-red-600">{error}</div>}
             </form>
