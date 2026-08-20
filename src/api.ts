@@ -1,3 +1,15 @@
+import {
+    AuthServiceService,
+    DotsServiceService,
+    ObjectsServiceService,
+    OpenAPI,
+    PathsServiceService,
+    type v1ListDotsResponse,
+    type v1ListObjectsResponse,
+    type v1ListPathsResponse,
+    type v1LoginResponse,
+} from './openapi/client';
+
 export interface Dot {
     id: string;
     title: string;
@@ -21,44 +33,32 @@ export interface Path {
     coordinates: { latitude: number; longitude: number }[];
 }
 
-const API = 'http://localhost:8081/api/v1';
+OpenAPI.BASE = 'http://localhost:8081';
 
-async function login(): Promise<string> {
-    const loginRes = await fetch(`${API}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'test@test.com', password: 'asdfasdf' }),
-    });
-    const { token } = await loginRes.json();
-    return token;
+async function login(): Promise<void> {
+    const { token } = (await AuthServiceService.authServiceLogin({
+        body: { email: 'test@test.com', password: 'asdfasdf' },
+    })) as v1LoginResponse;
+    OpenAPI.TOKEN = token;
 }
 
 export async function fetchDots(): Promise<Dot[]> {
-    const token = await login();
+    await login();
 
-    const dotsRes = await fetch(`${API}/dots`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-    const { dots } = await dotsRes.json();
-    return dots;
+    const { dots } = (await DotsServiceService.dotsServiceListDots({})) as v1ListDotsResponse;
+    return (dots ?? []) as Dot[];
 }
 
 export async function fetchObjects(): Promise<MapObject[]> {
-    const token = await login();
+    await login();
 
-    const objectsRes = await fetch(`${API}/objects`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await objectsRes.json();
-    return Array.isArray(data) ? data : data.objects;
+    const { objects } = (await ObjectsServiceService.objectsServiceListObjects({})) as v1ListObjectsResponse;
+    return (objects ?? []) as MapObject[];
 }
 
 export async function fetchPaths(): Promise<Path[]> {
-    const token = await login();
+    await login();
 
-    const pathsRes = await fetch(`${API}/paths`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await pathsRes.json();
-    return Array.isArray(data) ? data : data.paths;
+    const { paths } = (await PathsServiceService.pathsServiceListPaths({})) as v1ListPathsResponse;
+    return (paths ?? []) as Path[];
 }
