@@ -9,8 +9,8 @@ export interface Bounds {
     maxY: number;
 }
 
-const PADDING = 1.05;
-const MIN_ZOOM = 1;
+const PADDING = 0.98;
+const MIN_ZOOM = 1.5;
 const MAX_ZOOM = 8;
 const ZOOM_SPEED = 1.0045;
 const DEFAULT_ZOOM = 2.5;

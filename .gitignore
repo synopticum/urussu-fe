@@ -17,11 +17,10 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
-# raster map tiles (175MB, copied from the old urussu repo)
-public/images/tiles
-
 # editor / OS
 .idea
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+
+public/images/tiles

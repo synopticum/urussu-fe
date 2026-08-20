@@ -183,7 +183,8 @@ export function TileLayer() {
 
     // Latest pointer position in NDC; converted to world coordinates every
     // frame so the circle stays under the cursor while panning and zooming.
-    const pointer = useRef({ ndc: new Vector2(), active: false });
+    // While a drag is in progress the reveal circle is hidden entirely.
+    const pointer = useRef({ ndc: new Vector2(), active: false, dragging: false });
 
     // World-per-pixel at the initial camera fit; the reveal radius is kept
     // constant on screen by scaling it with the current ratio to this value.
@@ -199,12 +200,25 @@ export function TileLayer() {
         const onPointerLeave = () => {
             pointer.current.active = false;
         };
+        // Same button-0 drag that MapCamera pans with (src/MapCamera.tsx)
+        const onPointerDown = (e: PointerEvent) => {
+            if (e.button === 0) pointer.current.dragging = true;
+        };
+        const onPointerUp = () => {
+            pointer.current.dragging = false;
+        };
 
         el.addEventListener('pointermove', onPointerMove);
         el.addEventListener('pointerleave', onPointerLeave);
+        el.addEventListener('pointerdown', onPointerDown);
+        el.addEventListener('pointerup', onPointerUp);
+        el.addEventListener('pointercancel', onPointerUp);
         return () => {
             el.removeEventListener('pointermove', onPointerMove);
             el.removeEventListener('pointerleave', onPointerLeave);
+            el.removeEventListener('pointerdown', onPointerDown);
+            el.removeEventListener('pointerup', onPointerUp);
+            el.removeEventListener('pointercancel', onPointerUp);
         };
     }, [gl]);
 
@@ -213,7 +227,7 @@ export function TileLayer() {
     useFrame(({ camera, size }) => {
         if (!(camera instanceof OrthographicCamera)) return;
 
-        if (pointer.current.active) {
+        if (pointer.current.active && !pointer.current.dragging) {
             const world = new Vector3(pointer.current.ndc.x, pointer.current.ndc.y, 0).unproject(camera);
             reveal.uMouse.value.set(world.x, world.y);
         } else {
