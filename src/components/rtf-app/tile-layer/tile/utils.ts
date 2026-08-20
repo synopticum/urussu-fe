@@ -1,0 +1,1 @@
+export const getTileUrl = (z: number, x: number, y: number) => `/images/tiles/${z}/${x}/${y}.png`;

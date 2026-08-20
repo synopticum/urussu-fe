@@ -1,0 +1,1 @@
+export { DotShape } from './dot-shape';

@@ -1,0 +1,50 @@
+import * as React from 'react';
+import { useMemo } from 'react';
+import { BufferGeometry, Line, LineDashedMaterial, Vector2, Vector3, Path as ThreePath } from 'three';
+import { PATH_CORNER_RADIUS } from './constants';
+import { PathShapeProps } from './types';
+import { buildRoundedPath, toWorld } from '../utils';
+import { reveal } from '../constants';
+
+export const PathShape: React.FC<PathShapeProps> = ({ path }) => {
+    // An open line connects the points in array order with rounded corners;
+    // first and last are NOT joined, and the two endpoints stay sharp.
+    // computeLineDistances() is required for the dashed material to render dashes.
+    const line = useMemo(() => {
+        const rounded = new ThreePath();
+        buildRoundedPath(
+            rounded,
+            path.coordinates.map((c) => {
+                const [x, y] = toWorld(c.longitude, c.latitude);
+                return new Vector2(x, y);
+            }),
+            PATH_CORNER_RADIUS,
+            false
+        );
+        const points = rounded.getPoints(12).map((p) => new Vector3(p.x, p.y, 0));
+        const material = new LineDashedMaterial({ color: 'gray', dashSize: 0.25, gapSize: 0.125 });
+        // Discard fragments inside the mouse "glass" circle, same as the
+        // object fills: reads the shared reveal uniforms (see reveal.ts).
+        material.onBeforeCompile = (shader) => {
+            shader.uniforms.uMouse = reveal.uMouse;
+            shader.uniforms.uRadius = reveal.uRadius;
+            shader.vertexShader = shader.vertexShader
+                .replace('#include <common>', '#include <common>\nvarying vec2 vWorldPos;')
+                .replace(
+                    '#include <begin_vertex>',
+                    '#include <begin_vertex>\nvWorldPos = (modelMatrix * vec4(position, 1.0)).xy;'
+                );
+            shader.fragmentShader = shader.fragmentShader
+                .replace(
+                    '#include <common>',
+                    '#include <common>\nuniform vec2 uMouse;\nuniform float uRadius;\nvarying vec2 vWorldPos;'
+                )
+                .replace('void main() {', 'void main() {\n\tif (distance(vWorldPos, uMouse) < uRadius) discard;');
+        };
+        const result = new Line(new BufferGeometry().setFromPoints(points), material);
+        result.computeLineDistances();
+        return result;
+    }, [path]);
+
+    return <primitive object={line} />;
+};

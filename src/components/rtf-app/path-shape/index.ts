@@ -1,0 +1,1 @@
+export { PathShape } from './path-shape'

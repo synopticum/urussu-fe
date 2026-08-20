@@ -1,0 +1,1 @@
+export { RtfApp } from './rtf-app'

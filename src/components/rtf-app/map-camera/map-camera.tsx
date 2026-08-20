@@ -1,34 +1,12 @@
+import * as React from 'react';
 import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { MathUtils, OrthographicCamera, Vector3 } from 'three';
+import { RtfMapCameraProps } from './types';
+import { DEFAULT_ZOOM, MAX_ZOOM, MIN_ZOOM, PADDING, ZOOM_SPEED } from './constants';
+import { clampToBounds } from './utils';
 
-export interface Bounds {
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
-}
-
-const PADDING = 0.98;
-const MIN_ZOOM = 1.5;
-const MAX_ZOOM = 8;
-const ZOOM_SPEED = 1.0045;
-const DEFAULT_ZOOM = 2.5;
-
-// Keep the whole viewport inside the padded bounds; if the viewport is
-// wider/taller than the bounds (zoomed out), pin it to the bounds center
-function clampToBounds(camera: OrthographicCamera, bounds: Bounds) {
-    const halfW = ((camera.right - camera.left) / camera.zoom) * 0.5;
-    const halfH = ((camera.top - camera.bottom) / camera.zoom) * 0.5;
-    const cx = (bounds.minX + bounds.maxX) / 2;
-    const cy = (bounds.minY + bounds.maxY) / 2;
-    const padW = ((bounds.maxX - bounds.minX) * PADDING) / 2;
-    const padH = ((bounds.maxY - bounds.minY) * PADDING) / 2;
-    camera.position.x = padW > halfW ? MathUtils.clamp(camera.position.x, cx - padW + halfW, cx + padW - halfW) : cx;
-    camera.position.y = padH > halfH ? MathUtils.clamp(camera.position.y, cy - padH + halfH, cy + padH - halfH) : cy;
-}
-
-export function MapCamera({ bounds }: { bounds: Bounds | null }) {
+export const MapCamera: React.FC<RtfMapCameraProps> = ({ bounds }) => {
     const size = useThree((state) => state.size);
     const camera = useThree((state) => state.camera);
     const gl = useThree((state) => state.gl);
@@ -73,14 +51,15 @@ export function MapCamera({ bounds }: { bounds: Bounds | null }) {
 
             camera.zoom = next;
             camera.updateProjectionMatrix();
-            console.log('zoom:', next);
 
             const after = ndc.clone().unproject(camera);
             camera.position.add(before.sub(after));
 
             // Zooming toward the cursor can push the viewport past the map
             // edges; clamp it the same way dragging does
-            if (bounds) clampToBounds(camera, bounds);
+            if (bounds) {
+                clampToBounds(camera, bounds);
+            }
         };
 
         el.addEventListener('wheel', onWheel, { passive: false });
@@ -122,6 +101,7 @@ export function MapCamera({ bounds }: { bounds: Bounds | null }) {
         el.addEventListener('pointerdown', onPointerDown);
         el.addEventListener('pointermove', onPointerMove);
         el.addEventListener('pointerup', onPointerUp);
+
         return () => {
             el.removeEventListener('pointerdown', onPointerDown);
             el.removeEventListener('pointermove', onPointerMove);
@@ -130,4 +110,4 @@ export function MapCamera({ bounds }: { bounds: Bounds | null }) {
     }, [gl, camera, bounds]);
 
     return null;
-}
+};
