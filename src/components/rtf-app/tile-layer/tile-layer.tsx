@@ -7,6 +7,7 @@ import { MathUtils, OrthographicCamera, ShaderMaterial, SRGBColorSpace, TextureL
 // MapStore). World units match App.tsx: x = longitude, y = mercator in degrees,
 // so the full world spans [-180, 180] on both axes and tile math is closed-form.
 import { reveal, REVEAL_RADIUS, type RevealUniforms } from '../constants';
+import { MAX_ZOOM, MIN_ZOOM } from '../map-camera/constants';
 import { Tile } from './tile';
 import { TileWindow } from './types';
 import { MAX_Z, MIN_Z, TILE_SIZE } from './constants';
@@ -72,9 +73,11 @@ export const TileLayer = () => {
         const halfW = (camera.right - camera.left) / camera.zoom / 2;
         const halfH = (camera.top - camera.bottom) / camera.zoom / 2;
 
-        // Keep the reveal circle fixed on screen: REVEAL_RADIUS is in world
-        // units as seen at the initial fit, so scale it by how much the
-        // camera has zoomed since. The initial value is captured only after
+        // REVEAL_RADIUS is in world units as seen at the initial fit, so
+        // scaling it by worldPerPixel/initialWorldPerPixel would keep the
+        // circle at a constant screen size. Instead it also scales with
+        // camera.zoom: full size at MAX_ZOOM, 0.375 of it at MIN_ZOOM,
+        // lerped in between. The initial value is captured only after
         // MapCamera has taken ownership of the projection (camera.manual).
         const worldPerPixel = (halfH * 2) / size.height;
         reveal.uPixel.value = worldPerPixel;
@@ -82,7 +85,9 @@ export const TileLayer = () => {
             initialWorldPerPixel.current = worldPerPixel;
         }
         if (initialWorldPerPixel.current != null) {
-            reveal.uRadius.value = (REVEAL_RADIUS * worldPerPixel) / initialWorldPerPixel.current;
+            const zoomT = (camera.zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM);
+            const zoomScale = MathUtils.lerp((MIN_ZOOM * 1.5) / MAX_ZOOM, 1, zoomT);
+            reveal.uRadius.value = ((REVEAL_RADIUS * worldPerPixel) / initialWorldPerPixel.current) * zoomScale;
         }
 
         const minX = camera.position.x - halfW;

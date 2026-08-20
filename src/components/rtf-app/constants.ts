@@ -4,8 +4,9 @@ import { Vector2 } from 'three';
 // updates it every frame from the pointer position, and both the tile
 // shader and the object fill shader read the same uniform objects, so one
 // update per frame covers every material.
-// In world units (degrees) as seen at the initial camera fit; kept constant
-// on screen regardless of zoom (see TileLayer's useFrame).
+// In world units (degrees) as seen at the initial camera fit; this is the
+// on-screen size at MAX_ZOOM — the circle shrinks as you zoom out
+// (see TileLayer's useFrame).
 export const REVEAL_RADIUS = 10;
 
 // Uniform objects shared by every material, so the circle position and
