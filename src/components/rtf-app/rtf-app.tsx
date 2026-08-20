@@ -3,6 +3,7 @@ import { useSnapshot } from 'valtio';
 import { Canvas } from '@react-three/fiber';
 import { state } from './state';
 import { Bounds, MapCamera } from './map-camera';
+import { PaperBackground } from './paper-background';
 import { TileLayer } from './tile-layer';
 import { DotShape } from './dot-shape';
 import { ObjectShape } from './object-shape';
@@ -44,6 +45,7 @@ export const RtfApp = () => {
         <Canvas orthographic>
             <color attach="background" args={['#fffaf0']} />
             <MapCamera bounds={bounds} />
+            <PaperBackground />
 
             <Suspense fallback={null}>
                 <TileLayer />
