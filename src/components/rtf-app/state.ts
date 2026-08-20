@@ -12,7 +12,7 @@ import {
 } from '../../openapi/client';
 import { DotData, ObjectData, PathData } from './types';
 
-OpenAPI.BASE = 'http://localhost:8081';
+OpenAPI.BASE = import.meta.env.API_URL;
 
 async function login(): Promise<void> {
     const { token } = (await AuthServiceService.authServiceLogin({
