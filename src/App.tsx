@@ -1,5 +1,9 @@
-import { RtfApp } from './components/rtf-app';
+import { RouterProvider } from '@tanstack/react-router';
+import { router } from './router';
+import { state } from './pages/login/state';
+
+state.initAuth();
 
 export default function App() {
-    return <RtfApp />;
+    return <RouterProvider router={router} />;
 }

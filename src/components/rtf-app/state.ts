@@ -1,25 +1,13 @@
 import { proxy } from 'valtio';
 import {
-    AuthServiceService,
     DotsServiceService,
     ObjectsServiceService,
-    OpenAPI,
     PathsServiceService,
     type v1ListDotsResponse,
     type v1ListObjectsResponse,
     type v1ListPathsResponse,
-    type v1LoginResponse,
 } from '../../openapi/client';
 import { DotData, ObjectData, PathData } from './types';
-
-OpenAPI.BASE = import.meta.env.API_URL;
-
-async function login(): Promise<void> {
-    const { token } = (await AuthServiceService.authServiceLogin({
-        body: { email: 'test@test.com', password: 'asdfasdf' },
-    })) as v1LoginResponse;
-    OpenAPI.TOKEN = token;
-}
 
 class State {
     dots: DotData[] = [];
@@ -35,22 +23,16 @@ class State {
     }
 
     private async fetchDots() {
-        await login();
-
         const { dots } = (await DotsServiceService.dotsServiceListDots({})) as v1ListDotsResponse;
         this.dots = (dots ?? []) as unknown as DotData[];
     }
 
     private async fetchObjects() {
-        await login();
-
         const { objects } = (await ObjectsServiceService.objectsServiceListObjects({})) as v1ListObjectsResponse;
         this.objects = (objects ?? []) as ObjectData[];
     }
 
     private async fetchPaths() {
-        await login();
-
         const { paths } = (await PathsServiceService.pathsServiceListPaths({})) as v1ListPathsResponse;
         this.paths = (paths ?? []) as PathData[];
     }

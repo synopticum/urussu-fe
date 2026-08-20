@@ -11,12 +11,14 @@
     },
     "dependencies": {
         "@react-three/fiber": "^9.7.0",
+        "@tanstack/react-router": "^1.170.31",
         "react": "^19.2.8",
         "react-dom": "^19.2.8",
         "three": "^0.185.1",
         "valtio": "^2.3.2"
     },
     "devDependencies": {
+        "@tanstack/router-plugin": "^1.168.34",
         "@types/react": "^19.2.18",
         "@types/react-dom": "^19.2.4",
         "@types/three": "^0.185.4",
