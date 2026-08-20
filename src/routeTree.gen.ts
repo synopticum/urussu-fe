@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './pages/__root'
 import { Route as IndexRouteImport } from './pages/index'
 import { Route as LoginIndexRouteImport } from './pages/login/index'
+import { Route as ErrorsUnauthorizedIndexRouteImport } from './pages/errors/unauthorized/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErrorsUnauthorizedIndexRoute = ErrorsUnauthorizedIndexRouteImport.update({
+  id: '/errors/unauthorized/',
+  path: '/errors/unauthorized/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login/': typeof LoginIndexRoute
+  '/errors/unauthorized/': typeof ErrorsUnauthorizedIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginIndexRoute
+  '/errors/unauthorized': typeof ErrorsUnauthorizedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login/': typeof LoginIndexRoute
+  '/errors/unauthorized/': typeof ErrorsUnauthorizedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login/'
+  fullPaths: '/' | '/login/' | '/errors/unauthorized/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login'
-  id: '__root__' | '/' | '/login/'
+  to: '/' | '/login' | '/errors/unauthorized'
+  id: '__root__' | '/' | '/login/' | '/errors/unauthorized/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
+  ErrorsUnauthorizedIndexRoute: typeof ErrorsUnauthorizedIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/errors/unauthorized/': {
+      id: '/errors/unauthorized/'
+      path: '/errors/unauthorized'
+      fullPath: '/errors/unauthorized/'
+      preLoaderRoute: typeof ErrorsUnauthorizedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginIndexRoute: LoginIndexRoute,
+  ErrorsUnauthorizedIndexRoute: ErrorsUnauthorizedIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

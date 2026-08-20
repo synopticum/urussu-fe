@@ -3,7 +3,9 @@ import { state } from './login/state';
 
 export const Route = createRootRoute({
     beforeLoad: ({ location }) => {
-        if (!state.isAuthenticated() && location.pathname !== '/login') {
+        const isPublic = location.pathname === '/login' || location.pathname.startsWith('/errors/');
+
+        if (!state.isAuthenticated() && !isPublic) {
             throw redirect({ to: '/login' });
         }
     },

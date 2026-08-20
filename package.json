@@ -7,7 +7,7 @@
         "dev": "vite",
         "build": "tsc && vite build",
         "preview": "vite preview",
-        "generate-client": "openapi --input src/openapi/swagger.json --output src/openapi/client --client fetch --useOptions"
+        "generate-client": "openapi --input src/openapi/swagger.json --output src/openapi/client --client fetch --useOptions --request src/openapi/request.ts"
     },
     "dependencies": {
         "@react-three/fiber": "^9.7.0",

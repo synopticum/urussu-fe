@@ -1,8 +1,10 @@
 import { proxy } from 'valtio';
 import { router } from '../../router';
 import { AuthServiceService, OpenAPI, type v1LoginResponse } from '../../openapi/client';
+import { setUnauthorizedHandler } from '../../openapi/client/core/request';
 
 OpenAPI.BASE = import.meta.env.API_URL;
+setUnauthorizedHandler(() => state.handleUnauthorized());
 
 const TOKEN_KEY = 'urussu:token';
 
@@ -35,6 +37,11 @@ class State {
 
     isAuthenticated(): boolean {
         return Boolean(OpenAPI.TOKEN);
+    }
+
+    handleUnauthorized(): void {
+        this.clearToken();
+        void router.navigate({ to: '/errors/unauthorized' });
     }
 
     async onSubmit(): Promise<void> {
