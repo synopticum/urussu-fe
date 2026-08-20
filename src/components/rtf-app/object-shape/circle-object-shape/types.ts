@@ -1,3 +1,3 @@
-import { MapObject } from '../../../../api';
+import { ObjectData } from '../../types';
 
-export type CircleObjectShapeProps = { object: MapObject };
+export type CircleObjectShapeProps = { object: ObjectData };

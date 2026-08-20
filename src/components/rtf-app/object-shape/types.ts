@@ -1,3 +1,3 @@
-import type { MapObject } from '../../../api';
+import type { ObjectData } from '../types';
 
-export type ObjectShapeProps = { object: MapObject };
+export type ObjectShapeProps = { object: ObjectData };

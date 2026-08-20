@@ -1,3 +1,3 @@
-import { MapObject } from '../../../../api';
+import { ObjectData } from '../../types';
 
-export type PolygonObjectShapeProps = { object: MapObject };
+export type PolygonObjectShapeProps = { object: ObjectData };

@@ -1,3 +1,3 @@
-import { Dot } from '../../../api';
+import { DotData } from '../types';
 
-export type DotShapeProps = { dot: Dot };
+export type DotShapeProps = { dot: DotData };

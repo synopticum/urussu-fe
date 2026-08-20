@@ -1,6 +1,7 @@
-import { Suspense, useEffect, useMemo, useState } from 'react';
-import { Dot, fetchDots, fetchObjects, fetchPaths, MapObject, Path } from '../../api';
+import { Suspense, useEffect, useMemo } from 'react';
+import { useSnapshot } from 'valtio';
 import { Canvas } from '@react-three/fiber';
+import { state } from './state';
 import { Bounds, MapCamera } from './map-camera';
 import { TileLayer } from './tile-layer';
 import { DotShape } from './dot-shape';
@@ -9,14 +10,10 @@ import { PathShape } from './path-shape';
 import { toWorld } from './utils';
 
 export const RtfApp = () => {
-    const [dots, setDots] = useState<Dot[]>([]);
-    const [objects, setObjects] = useState<MapObject[]>([]);
-    const [paths, setPaths] = useState<Path[]>([]);
+    const { dots, objects, paths } = useSnapshot(state);
 
     useEffect(() => {
-        fetchDots().then(setDots).catch(console.error);
-        fetchObjects().then(setObjects).catch(console.error);
-        fetchPaths().then(setPaths).catch(console.error);
+        state.fetchAll().catch(console.error);
     }, []);
 
     const bounds = useMemo<Bounds | null>(() => {

@@ -1,3 +1,3 @@
-import type { Path } from '../../../api';
+import type { PathData } from '../types';
 
-export type PathShapeProps = { path: Path };
+export type PathShapeProps = { path: PathData };
