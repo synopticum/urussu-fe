@@ -1,5 +1,7 @@
 import { proxy } from 'valtio';
+import { EntityDetailsView } from './types';
 
 export const state = proxy({
-    view: 'info' as 'info' | 'comments',
+    entityId: null as string | null,
+    view: 'info' as EntityDetailsView,
 });

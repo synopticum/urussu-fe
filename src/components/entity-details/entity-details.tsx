@@ -6,17 +6,18 @@ import { Comments } from './comments';
 import { Info } from './info';
 import { state } from './state';
 import { getTitle } from './utils';
-import { useEffect } from 'react';
 
 export const EntityDetails: React.FC = () => {
     const { selectedEntity } = useSnapshot(appStore);
-    const { view } = useSnapshot(state);
+    useSnapshot(state);
 
-    const entityId = selectedEntity?.data.id;
+    const entityId = selectedEntity?.data.id ?? null;
 
-    useEffect(() => {
-        state.view = 'info';
-    }, [entityId]);
+    // The chosen view is valid only for the entity it was chosen on, so
+    // selecting another entity falls back to 'info' synchronously during
+    // render — Comments never mounts (and never fetches) until the button
+    // is clicked for that entity.
+    const view = state.entityId === entityId ? state.view : 'info';
 
     if (!selectedEntity) {
         return null;
@@ -29,7 +30,10 @@ export const EntityDetails: React.FC = () => {
                 <div className="flex items-center gap-1">
                     <button
                         type="button"
-                        onClick={() => (state.view = view === 'comments' ? 'info' : 'comments')}
+                        onClick={() => {
+                            state.entityId = entityId;
+                            state.view = view === 'comments' ? 'info' : 'comments';
+                        }}
                         className={`rounded p-1 hover:bg-neutral-100 hover:text-neutral-800 ${
                             view === 'comments' ? 'bg-neutral-100 text-neutral-800' : 'text-neutral-500'
                         }`}
@@ -39,7 +43,11 @@ export const EntityDetails: React.FC = () => {
                     </button>
                     <button
                         type="button"
-                        onClick={() => appStore.closeInfoPanel()}
+                        onClick={() => {
+                            state.entityId = null;
+                            state.view = 'info';
+                            appStore.closeInfoPanel();
+                        }}
                         className="rounded p-1 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
                         aria-label="Close panel"
                     >
