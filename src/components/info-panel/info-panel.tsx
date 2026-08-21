@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useSnapshot } from 'valtio';
 import { appStore } from '../../stores/app';
+import { IconComment, IconCross } from '../icons';
 import { getTitle } from './utils';
 
 export const InfoPanel: React.FC = () => {
@@ -31,10 +32,12 @@ export const InfoPanel: React.FC = () => {
                     <button
                         type="button"
                         onClick={() => setView(view === 'comments' ? 'details' : 'comments')}
-                        className="rounded p-1 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
+                        className={`rounded p-1 hover:bg-neutral-100 hover:text-neutral-800 ${
+                            view === 'comments' ? 'bg-neutral-100 text-neutral-800' : 'text-neutral-500'
+                        }`}
                         aria-label="Toggle comments"
                     >
-                        💬
+                        <IconComment />
                     </button>
                     <button
                         type="button"
@@ -42,7 +45,7 @@ export const InfoPanel: React.FC = () => {
                         className="rounded p-1 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
                         aria-label="Close panel"
                     >
-                        ✕
+                        <IconCross />
                     </button>
                 </div>
             </div>
