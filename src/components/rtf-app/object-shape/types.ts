@@ -1,3 +1,3 @@
-import type { ObjectData } from '@/stores/app';
+import type { ObjectData } from '@/stores';
 
 export type ObjectShapeProps = { object: ObjectData };

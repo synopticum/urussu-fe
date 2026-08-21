@@ -4,11 +4,11 @@ import { AuthServiceService, OpenAPI, type v1LoginResponse } from '@/openapi/cli
 import { setUnauthorizedHandler } from '@/openapi/client/core/request';
 
 OpenAPI.BASE = import.meta.env.API_URL;
-setUnauthorizedHandler(() => state.handleUnauthorized());
+setUnauthorizedHandler(() => authStore.handleUnauthorized());
 
 const TOKEN_KEY = 'urussu:token';
 
-class State {
+class AuthStore {
     email = '';
     password = '';
     error: string | null = null;
@@ -69,4 +69,4 @@ class State {
     }
 }
 
-export const state = proxy(new State());
+export const authStore = proxy(new AuthStore());

@@ -4,7 +4,7 @@ import { BufferGeometry, ShapeGeometry, Vector2, Vector3 } from 'three';
 import { roundedPolygonShape } from './utils';
 import { PolygonObjectShapeProps } from './types';
 import { fillMaterial, OBJECT_STROKE } from '../constants';
-import { appStore } from '@/stores/app';
+import { appStore } from '@/stores';
 import { toWorld } from '../../utils';
 import { Highlight } from '../../highlight';
 

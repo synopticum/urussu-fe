@@ -1,8 +1,8 @@
 import { RouterProvider } from '@tanstack/react-router';
 import { router } from './router';
-import { state } from '@/pages/login/state';
+import { authStore } from '@/stores';
 
-state.initAuth();
+authStore.initAuth();
 
 export default function App() {
     return <RouterProvider router={router} />;

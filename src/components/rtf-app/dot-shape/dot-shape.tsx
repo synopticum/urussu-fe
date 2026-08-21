@@ -5,7 +5,7 @@ import { MathUtils, Mesh } from 'three';
 import { DOT_HOVER_SCALE } from './constants';
 import { DotShapeProps } from './types';
 import { HIGHLIGHT_FADE_MS } from '../highlight/constants';
-import { appStore } from '@/stores/app';
+import { appStore } from '@/stores';
 import { toWorld } from '../utils';
 
 export const DotShape: React.FC<DotShapeProps> = ({ dot }) => {

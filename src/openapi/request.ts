@@ -132,7 +132,7 @@ export const getFormData = (options: ApiRequestOptions): FormData | undefined =>
 };
 
 // App hook invoked on every 401 response.
-// The app registers a handler via setUnauthorizedHandler (see src/pages/login/state.ts).
+// The app registers a handler via setUnauthorizedHandler (see src/stores/auth/store.ts).
 let unauthorizedHandler: (() => void) | null = null;
 
 export const setUnauthorizedHandler = (handler: () => void): void => {

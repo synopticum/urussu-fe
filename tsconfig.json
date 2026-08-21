@@ -10,9 +10,11 @@
         "isolatedModules": true,
         "noEmit": true,
         "paths": {
+            "@/components": ["./src/components/index.ts"],
             "@/components/*": ["./src/components/*"],
             "@/openapi/*": ["./src/openapi/*"],
             "@/pages/*": ["./src/pages/*"],
+            "@/stores": ["./src/stores/index.ts"],
             "@/stores/*": ["./src/stores/*"]
         }
     },

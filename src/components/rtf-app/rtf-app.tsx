@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useMemo } from 'react';
 import { useSnapshot } from 'valtio';
 import { Canvas } from '@react-three/fiber';
-import { appStore } from '@/stores/app';
+import { appStore } from '@/stores';
 import { Bounds, MapCamera } from './map-camera';
 import { PaperBackground } from './paper-background';
 import { TileLayer } from './tile-layer';

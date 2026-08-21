@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useSnapshot } from 'valtio';
-import { appStore } from '@/stores/app';
+import { appStore } from '@/stores';
 import { CommentForm } from '../comment-form';
 import { Comment } from './comment';
 import { CommentsProps } from './types';

@@ -1,14 +1,14 @@
 import { FormEvent } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useSnapshot } from 'valtio';
-import { state } from './state';
+import { authStore } from '@/stores';
 
 const LoginPage = () => {
-    const { email, password, error, loading } = useSnapshot(state);
+    const { email, password, error, loading } = useSnapshot(authStore);
 
     const onSubmit = (e: FormEvent) => {
         e.preventDefault();
-        state.onSubmit();
+        authStore.onSubmit();
     };
 
     return (
@@ -22,7 +22,7 @@ const LoginPage = () => {
                     placeholder="Email"
                     required
                     value={email}
-                    onChange={(e) => (state.email = e.target.value)}
+                    onChange={(e) => (authStore.email = e.target.value)}
                     className="rounded-md border border-neutral-300 px-3 py-2 text-sm text-black placeholder-neutral-400 outline-none focus:border-black focus:ring-1 focus:ring-black"
                 />
                 <input
@@ -30,7 +30,7 @@ const LoginPage = () => {
                     placeholder="Пароль"
                     required
                     value={password}
-                    onChange={(e) => (state.password = e.target.value)}
+                    onChange={(e) => (authStore.password = e.target.value)}
                     className="rounded-md border border-neutral-300 px-3 py-2 text-sm text-black placeholder-neutral-400 outline-none focus:border-black focus:ring-1 focus:ring-black"
                 />
                 <button

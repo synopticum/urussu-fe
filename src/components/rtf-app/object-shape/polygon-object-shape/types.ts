@@ -1,3 +1,3 @@
-import { ObjectData } from '@/stores/app';
+import { ObjectData } from '@/stores';
 
 export type PolygonObjectShapeProps = { object: ObjectData };

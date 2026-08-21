@@ -1,3 +1,3 @@
-import { DotData } from '@/stores/app';
+import { DotData } from '@/stores';
 
 export type DotShapeProps = { dot: DotData };
