@@ -9,11 +9,13 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { protobufAny } from './models/protobufAny';
 export type { rpcStatus } from './models/rpcStatus';
+export type { v1Comment } from './models/v1Comment';
 export type { v1Dot } from './models/v1Dot';
 export type { v1GetDotResponse } from './models/v1GetDotResponse';
 export type { v1GetObjectResponse } from './models/v1GetObjectResponse';
 export type { v1GetPathResponse } from './models/v1GetPathResponse';
 export type { v1Image } from './models/v1Image';
+export type { v1ListCommentsResponse } from './models/v1ListCommentsResponse';
 export type { v1ListDotsResponse } from './models/v1ListDotsResponse';
 export type { v1ListObjectsResponse } from './models/v1ListObjectsResponse';
 export type { v1ListPathsResponse } from './models/v1ListPathsResponse';
@@ -27,6 +29,7 @@ export type { v1RegisterResponse } from './models/v1RegisterResponse';
 export type { v1User } from './models/v1User';
 
 export { AuthServiceService } from './services/AuthServiceService';
+export { CommentsServiceService } from './services/CommentsServiceService';
 export { DotsServiceService } from './services/DotsServiceService';
 export { ObjectsServiceService } from './services/ObjectsServiceService';
 export { PathsServiceService } from './services/PathsServiceService';
