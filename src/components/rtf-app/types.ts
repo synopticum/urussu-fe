@@ -1,9 +1,12 @@
+import { v1Image } from '../../openapi/client';
+
 export interface DotData {
     id: string;
     title: string;
     description: string;
     layer: string;
     coordinates: readonly [number, number]; // [latitude, longitude]
+    images?: readonly v1Image[];
 }
 
 export interface ObjectData {
@@ -14,6 +17,7 @@ export interface ObjectData {
     coordinates: readonly { latitude: number; longitude: number }[];
     // Present only on circular objects: a single center coordinate plus this radius
     radius?: number;
+    images?: readonly v1Image[];
 }
 
 export interface PathData {
@@ -21,6 +25,7 @@ export interface PathData {
     coordinates: readonly { latitude: number; longitude: number }[];
     title: string;
     description: string;
+    images?: readonly v1Image[];
 }
 
 export type SelectedEntity =
