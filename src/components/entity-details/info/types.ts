@@ -1,3 +1,3 @@
 import { SelectedEntity } from '@/stores';
 
-export type InfoProps = { data: SelectedEntity['data'] };
+export type InfoProps = { entityData: SelectedEntity };

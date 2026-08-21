@@ -60,7 +60,7 @@ export const EntityDetails: React.FC = () => {
                 {view === 'comments' ? (
                     <Comments entityId={selectedEntity.data.id} />
                 ) : (
-                    <Info data={selectedEntity.data} />
+                    <Info entityData={selectedEntity} />
                 )}
             </div>
         </aside>
