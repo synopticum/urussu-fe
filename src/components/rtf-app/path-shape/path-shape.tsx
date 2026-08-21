@@ -54,6 +54,11 @@ export const PathShape: React.FC<PathShapeProps> = ({ path }) => {
             onClick={(e: ThreeEvent<MouseEvent>) => {
                 // Ignore clicks that were actually map drags (see CLICK_MAX_DELTA)
                 if (e.delta > CLICK_MAX_DELTA) return;
+                // Objects outrank paths: the path line sits closer to the
+                // camera than the object fills, so on overlap this handler
+                // fires first — but if the same ray also hit an object fill,
+                // skip selection here and let the object's own handler run.
+                if (e.intersections.some((hit) => hit.object.userData.isObjectFill)) return;
                 e.stopPropagation();
                 appStore.selectEntity({ type: 'path', data: path });
             }}

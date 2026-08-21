@@ -14,6 +14,10 @@ export const RADIUS_SCALE = 4 / 111320; // ≈ 4x meters-per-degree of latitude
 export const OBJECT_FILL = '#dfcd99';
 export const OBJECT_STROKE = '#7d6a45';
 
+// Tag on the fill meshes' userData so PathShape's click handler can
+// recognize that a click also hit an object and yield to it.
+export const OBJECT_FILL_USER_DATA = { isObjectFill: true };
+
 export const fillMaterial = new ShaderMaterial({
     uniforms: {
         uColor: { value: new Color(OBJECT_FILL) },

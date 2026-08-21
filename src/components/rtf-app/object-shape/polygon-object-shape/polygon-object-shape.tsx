@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { BufferGeometry, ShapeGeometry, Vector2, Vector3 } from 'three';
 import { roundedPolygonShape } from './utils';
 import { PolygonObjectShapeProps } from './types';
-import { fillMaterial, OBJECT_STROKE } from '../constants';
+import { fillMaterial, OBJECT_FILL_USER_DATA, OBJECT_STROKE } from '../constants';
 import { CLICK_MAX_DELTA } from '../../constants';
 import { appStore } from '@/stores';
 import { toWorld } from '../../utils';
@@ -35,6 +35,7 @@ export const PolygonObjectShape: React.FC<PolygonObjectShapeProps> = ({ object }
                 geometry={fillGeometry}
                 position={[0, 0, -0.01]}
                 material={fillMaterial}
+                userData={OBJECT_FILL_USER_DATA}
                 onClick={(e) => {
                     // Ignore clicks that were actually map drags (see CLICK_MAX_DELTA)
                     if (e.delta > CLICK_MAX_DELTA) return;
