@@ -1,7 +1,7 @@
 export interface DotData {
     id: string;
     title: string;
-    shortDescription: string;
+    description: string;
     layer: string;
     coordinates: readonly [number, number]; // [latitude, longitude]
 }
@@ -19,4 +19,11 @@ export interface ObjectData {
 export interface PathData {
     id: string;
     coordinates: readonly { latitude: number; longitude: number }[];
+    title: string;
+    description: string;
 }
+
+export type SelectedEntity =
+    | { type: 'dot'; data: DotData }
+    | { type: 'object'; data: ObjectData }
+    | { type: 'path'; data: PathData };

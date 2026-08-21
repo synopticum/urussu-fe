@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { BufferGeometry, EllipseCurve } from 'three';
 import { CircleObjectShapeProps } from './types';
 import { fillMaterial, OBJECT_STROKE, RADIUS_SCALE } from '../constants';
+import { state } from '../../state';
 import { toWorld } from '../../utils';
 import { Highlight } from '../../highlight';
 
@@ -23,7 +24,10 @@ export const CircleObjectShape: React.FC<CircleObjectShapeProps> = ({ object }) 
             <mesh
                 position={[0, 0, -0.01]}
                 material={fillMaterial}
-                onClick={() => console.log(object)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    state.selectEntity({ type: 'object', data: object });
+                }}
                 onPointerOver={(e) => {
                     e.stopPropagation();
                     setHovered(true);

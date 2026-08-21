@@ -4,6 +4,7 @@ import { BufferGeometry, ShapeGeometry, Vector2, Vector3 } from 'three';
 import { roundedPolygonShape } from './utils';
 import { PolygonObjectShapeProps } from './types';
 import { fillMaterial, OBJECT_STROKE } from '../constants';
+import { state } from '../../state';
 import { toWorld } from '../../utils';
 import { Highlight } from '../../highlight';
 
@@ -33,7 +34,10 @@ export const PolygonObjectShape: React.FC<PolygonObjectShapeProps> = ({ object }
                 geometry={fillGeometry}
                 position={[0, 0, -0.01]}
                 material={fillMaterial}
-                onClick={() => console.log(object)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    state.selectEntity({ type: 'object', data: object });
+                }}
                 onPointerOver={(e) => {
                     e.stopPropagation();
                     setHovered(true);

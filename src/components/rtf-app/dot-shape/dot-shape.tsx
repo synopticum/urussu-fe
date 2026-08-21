@@ -25,7 +25,7 @@ export const DotShape: React.FC<DotShapeProps> = ({ dot }) => {
             position={[...toWorld(dot.coordinates[1], dot.coordinates[0]), 0]}
             onClick={(e) => {
                 e.stopPropagation();
-                state.selectDot(dot);
+                state.selectEntity({ type: 'dot', data: dot });
             }}
             onPointerOver={(e) => {
                 e.stopPropagation();

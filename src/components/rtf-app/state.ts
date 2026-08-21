@@ -7,20 +7,20 @@ import {
     type v1ListObjectsResponse,
     type v1ListPathsResponse,
 } from '../../openapi/client';
-import { DotData, ObjectData, PathData } from './types';
+import { DotData, ObjectData, PathData, SelectedEntity } from './types';
 
 class State {
     dots: DotData[] = [];
     objects: ObjectData[] = [];
     paths: PathData[] = [];
-    selectedDot: DotData | null = null;
+    selectedEntity: SelectedEntity | null = null;
 
-    selectDot(dot: DotData) {
-        this.selectedDot = dot;
+    selectEntity(entity: SelectedEntity) {
+        this.selectedEntity = entity;
     }
 
     closeInfoPanel() {
-        this.selectedDot = null;
+        this.selectedEntity = null;
     }
 
     // NOTE: all fetch methods must stay regular methods, not arrow

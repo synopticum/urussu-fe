@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { useMemo } from 'react';
+import { ThreeEvent } from '@react-three/fiber';
 import { BufferGeometry, Line, LineDashedMaterial, Vector2, Vector3, Path as ThreePath } from 'three';
 import { PATH_CORNER_RADIUS } from './constants';
 import { PathShapeProps } from './types';
 import { buildRoundedPath, toWorld } from '../utils';
+import { state } from '../state';
 import { reveal } from '../constants';
 
 export const PathShape: React.FC<PathShapeProps> = ({ path }) => {
@@ -46,5 +48,13 @@ export const PathShape: React.FC<PathShapeProps> = ({ path }) => {
         return result;
     }, [path]);
 
-    return <primitive object={line} />;
+    return (
+        <primitive
+            object={line}
+            onClick={(e: ThreeEvent<MouseEvent>) => {
+                e.stopPropagation();
+                state.selectEntity({ type: 'path', data: path });
+            }}
+        />
+    );
 };
