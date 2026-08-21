@@ -1,9 +1,11 @@
 import { proxy } from 'valtio';
 import {
+    CommentsServiceService,
     DotsServiceService,
     ObjectsServiceService,
-    OpenAPI,
     PathsServiceService,
+    type v1Comment,
+    type v1ListCommentsResponse,
     type v1ListDotsResponse,
     type v1ListObjectsResponse,
     type v1ListPathsResponse,
@@ -15,7 +17,7 @@ class Store {
     objects: ObjectData[] = [];
     paths: PathData[] = [];
     selectedEntity: SelectedEntity | null = null;
-    comments: unknown[] = [];
+    comments: v1Comment[] = [];
     commentsStatus: CommentsStatus = 'idle';
 
     selectEntity(entity: SelectedEntity) {
@@ -40,23 +42,11 @@ class Store {
         this.commentsStatus = 'loading';
 
         try {
-            const headers: Record<string, string> = { Accept: 'application/json' };
+            const { comments } = (await CommentsServiceService.commentsServiceListComments({
+                entityId,
+            })) as v1ListCommentsResponse;
 
-            if (typeof OpenAPI.TOKEN === 'string' && OpenAPI.TOKEN) {
-                headers['Authorization'] = `Bearer ${OpenAPI.TOKEN}`;
-            }
-
-            const response = await fetch(
-                `${OpenAPI.BASE}/comments?entity_id=${encodeURIComponent(entityId)}`,
-                { headers },
-            );
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch comments: ${response.status}`);
-            }
-
-            const data = await response.json();
-            this.comments = Array.isArray(data) ? data : (data?.comments ?? []);
+            this.comments = (comments ?? []) as v1Comment[];
             this.commentsStatus = 'success';
         } catch {
             this.comments = [];
