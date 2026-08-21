@@ -1,3 +1,3 @@
-import type { PathData } from '../types';
+import type { PathData } from '../../../stores/app';
 
 export type PathShapeProps = { path: PathData };

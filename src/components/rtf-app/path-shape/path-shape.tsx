@@ -5,7 +5,7 @@ import { BufferGeometry, Line, LineDashedMaterial, Vector2, Vector3, Path as Thr
 import { PATH_CORNER_RADIUS } from './constants';
 import { PathShapeProps } from './types';
 import { buildRoundedPath, toWorld } from '../utils';
-import { state } from '../state';
+import { appStore } from '../../../stores/app';
 import { reveal } from '../constants';
 
 export const PathShape: React.FC<PathShapeProps> = ({ path }) => {
@@ -53,7 +53,7 @@ export const PathShape: React.FC<PathShapeProps> = ({ path }) => {
             object={line}
             onClick={(e: ThreeEvent<MouseEvent>) => {
                 e.stopPropagation();
-                state.selectEntity({ type: 'path', data: path });
+                appStore.selectEntity({ type: 'path', data: path });
             }}
         />
     );

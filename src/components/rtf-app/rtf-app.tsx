@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useMemo } from 'react';
 import { useSnapshot } from 'valtio';
 import { Canvas } from '@react-three/fiber';
-import { state } from './state';
+import { appStore } from '../../stores/app';
 import { Bounds, MapCamera } from './map-camera';
 import { PaperBackground } from './paper-background';
 import { TileLayer } from './tile-layer';
@@ -11,10 +11,10 @@ import { PathShape } from './path-shape';
 import { toWorld } from './utils';
 
 export const RtfApp = () => {
-    const { dots, objects, paths } = useSnapshot(state);
+    const { dots, objects, paths } = useSnapshot(appStore);
 
     useEffect(() => {
-        state.fetchAll().catch(console.error);
+        appStore.fetchAll().catch(console.error);
     }, []);
 
     const bounds = useMemo<Bounds | null>(() => {

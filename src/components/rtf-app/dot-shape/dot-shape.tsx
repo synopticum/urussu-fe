@@ -5,7 +5,7 @@ import { MathUtils, Mesh } from 'three';
 import { DOT_HOVER_SCALE } from './constants';
 import { DotShapeProps } from './types';
 import { HIGHLIGHT_FADE_MS } from '../highlight/constants';
-import { state } from '../state';
+import { appStore } from '../../../stores/app';
 import { toWorld } from '../utils';
 
 export const DotShape: React.FC<DotShapeProps> = ({ dot }) => {
@@ -25,7 +25,7 @@ export const DotShape: React.FC<DotShapeProps> = ({ dot }) => {
             position={[...toWorld(dot.coordinates[1], dot.coordinates[0]), 0]}
             onClick={(e) => {
                 e.stopPropagation();
-                state.selectEntity({ type: 'dot', data: dot });
+                appStore.selectEntity({ type: 'dot', data: dot });
             }}
             onPointerOver={(e) => {
                 e.stopPropagation();

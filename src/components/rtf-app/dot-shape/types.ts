@@ -1,3 +1,3 @@
-import { DotData } from '../types';
+import { DotData } from '../../../stores/app';
 
 export type DotShapeProps = { dot: DotData };

@@ -32,3 +32,5 @@ export type SelectedEntity =
     | { type: 'dot'; data: DotData }
     | { type: 'object'; data: ObjectData }
     | { type: 'path'; data: PathData };
+
+export type CommentsStatus = 'idle' | 'loading' | 'error' | 'success';
