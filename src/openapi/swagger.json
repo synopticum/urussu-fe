@@ -374,8 +374,9 @@
         "id": {
           "type": "string"
         },
-        "userId": {
-          "type": "string"
+        "name": {
+          "type": "string",
+          "description": "Author's display name, derived from the user's first and last name."
         },
         "body": {
           "type": "string"

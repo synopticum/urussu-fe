@@ -4,7 +4,10 @@
 /* eslint-disable */
 export type v1Comment = {
     id?: string;
-    userId?: string;
+    /**
+     * Author's display name, derived from the user's first and last name.
+     */
+    name?: string;
     body?: string;
     createdAt?: string;
     modifiedAt?: string;
