@@ -4,13 +4,16 @@ import {
     DotsServiceService,
     ObjectsServiceService,
     PathsServiceService,
+    v1CommentEntityType,
     type v1Comment,
+    type v1CreateCommentResponse,
     type v1ListCommentsResponse,
     type v1ListDotsResponse,
     type v1ListObjectsResponse,
     type v1ListPathsResponse,
 } from '../../openapi/client';
 import { CommentsStatus, DotData, ObjectData, PathData, SelectedEntity } from './types';
+import { COMMENT_ENTITY_TYPE_MAP } from './constants';
 
 class Store {
     dots: DotData[] = [];
@@ -51,6 +54,24 @@ class Store {
         } catch {
             this.comments = [];
             this.commentsStatus = 'error';
+        }
+    }
+
+    async addComment(body: string) {
+        if (!this.selectedEntity) {
+            throw new Error('Не выбрана сущность для комментария');
+        }
+
+        const { comment } = (await CommentsServiceService.commentsServiceCreateComment({
+            body: {
+                entityId: this.selectedEntity.data.id,
+                entityType: COMMENT_ENTITY_TYPE_MAP[this.selectedEntity.type],
+                body,
+            },
+        })) as v1CreateCommentResponse;
+
+        if (comment) {
+            this.comments.push(comment);
         }
     }
 

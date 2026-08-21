@@ -3,14 +3,14 @@ import { useSnapshot } from 'valtio';
 import { state } from './state';
 
 export const CommentForm: React.FC = () => {
-    const { body, isTooLong, isValid } = useSnapshot(state);
+    const { body, isTooLong, isValid, serverError } = useSnapshot(state);
 
     return (
         <form
             className="space-y-2"
             onSubmit={(event) => {
                 event.preventDefault();
-                state.onSubmit();
+                void state.onSubmit();
             }}
         >
             <textarea
@@ -31,6 +31,8 @@ export const CommentForm: React.FC = () => {
             >
                 Отправить
             </button>
+
+            {serverError && <div className="text-sm text-red-600">{serverError}</div>}
         </form>
     );
 };

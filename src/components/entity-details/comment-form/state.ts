@@ -1,9 +1,11 @@
 import { proxy } from 'valtio';
+import { appStore } from '../../../stores/app';
 
 export const MAX_BODY_LENGTH = 240;
 
 class State {
     body = '';
+    serverError: string | null = null;
 
     get isTooLong(): boolean {
         return this.body.length > MAX_BODY_LENGTH;
@@ -17,11 +19,17 @@ class State {
         return !this.isEmpty && !this.isTooLong;
     }
 
-    onSubmit(): void {
+    async onSubmit(): Promise<void> {
         if (!this.isValid) return;
 
-        // TODO: send the comment to the server once the API is ready.
-        this.body = '';
+        this.serverError = null;
+
+        try {
+            await appStore.addComment(this.body.trim());
+            this.body = '';
+        } catch (error) {
+            this.serverError = error instanceof Error ? error.message : 'Что-то пошло не так';
+        }
     }
 }
 
