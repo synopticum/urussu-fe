@@ -1,4 +1,4 @@
-import { v1CommentEntityType } from '../../openapi/client';
+import { v1CommentEntityType } from '@/openapi/client';
 
 export const COMMENT_ENTITY_TYPE_MAP = {
     dot: v1CommentEntityType.COMMENT_ENTITY_TYPE_DOT,

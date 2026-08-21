@@ -1,7 +1,7 @@
 import { proxy } from 'valtio';
 import { router } from '../../router';
-import { AuthServiceService, OpenAPI, type v1LoginResponse } from '../../openapi/client';
-import { setUnauthorizedHandler } from '../../openapi/client/core/request';
+import { AuthServiceService, OpenAPI, type v1LoginResponse } from '@/openapi/client';
+import { setUnauthorizedHandler } from '@/openapi/client/core/request';
 
 OpenAPI.BASE = import.meta.env.API_URL;
 setUnauthorizedHandler(() => state.handleUnauthorized());

@@ -1,4 +1,4 @@
-import { v1Image } from '../../openapi/client';
+import { v1Image } from '@/openapi/client';
 
 export interface DotData {
     id: string;

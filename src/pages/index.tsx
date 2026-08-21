@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { EntityDetails } from '../components/entity-details';
-import { RtfApp } from '../components/rtf-app';
+import { EntityDetails } from '@/components/entity-details';
+import { RtfApp } from '@/components/rtf-app';
 
 const MapPage = () => {
     return (

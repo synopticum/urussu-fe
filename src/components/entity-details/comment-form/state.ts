@@ -1,5 +1,5 @@
 import { proxy } from 'valtio';
-import { appStore } from '../../../stores/app';
+import { appStore } from '@/stores/app';
 
 export const MAX_BODY_LENGTH = 240;
 

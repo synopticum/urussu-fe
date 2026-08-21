@@ -8,7 +8,13 @@
         "strict": true,
         "skipLibCheck": true,
         "isolatedModules": true,
-        "noEmit": true
+        "noEmit": true,
+        "paths": {
+            "@/components/*": ["./src/components/*"],
+            "@/openapi/*": ["./src/openapi/*"],
+            "@/pages/*": ["./src/pages/*"],
+            "@/stores/*": ["./src/stores/*"]
+        }
     },
     "include": ["src"]
 }

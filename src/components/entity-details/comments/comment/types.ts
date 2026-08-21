@@ -1,3 +1,3 @@
-import { v1Comment } from '../../../../openapi/client';
+import { v1Comment } from '@/openapi/client';
 
 export type CommentProps = { comment: v1Comment };

@@ -5,7 +5,7 @@ import { BufferGeometry, Line, LineDashedMaterial, Vector2, Vector3, Path as Thr
 import { PATH_CORNER_RADIUS } from './constants';
 import { PathShapeProps } from './types';
 import { buildRoundedPath, toWorld } from '../utils';
-import { appStore } from '../../../stores/app';
+import { appStore } from '@/stores/app';
 import { reveal } from '../constants';
 
 export const PathShape: React.FC<PathShapeProps> = ({ path }) => {

@@ -1,4 +1,4 @@
-import { SelectedEntity } from '../../stores/app';
+import { SelectedEntity } from '@/stores/app';
 
 export const getTitle = (selectedEntity: SelectedEntity) => {
     const { type } = selectedEntity;

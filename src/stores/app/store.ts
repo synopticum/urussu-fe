@@ -11,7 +11,7 @@ import {
     type v1ListDotsResponse,
     type v1ListObjectsResponse,
     type v1ListPathsResponse,
-} from '../../openapi/client';
+} from '@/openapi/client';
 import { CommentsStatus, DotData, ObjectData, PathData, SelectedEntity } from './types';
 import { COMMENT_ENTITY_TYPE_MAP } from './constants';
 

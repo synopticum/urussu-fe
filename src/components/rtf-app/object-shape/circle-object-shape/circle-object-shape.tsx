@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { BufferGeometry, EllipseCurve } from 'three';
 import { CircleObjectShapeProps } from './types';
 import { fillMaterial, OBJECT_STROKE, RADIUS_SCALE } from '../constants';
-import { appStore } from '../../../../stores/app';
+import { appStore } from '@/stores/app';
 import { toWorld } from '../../utils';
 import { Highlight } from '../../highlight';
 
