@@ -5,6 +5,7 @@ import { MathUtils, Mesh } from 'three';
 import { DOT_HOVER_SCALE } from './constants';
 import { DotShapeProps } from './types';
 import { HIGHLIGHT_FADE_MS } from '../highlight/constants';
+import { state } from '../state';
 import { toWorld } from '../utils';
 
 export const DotShape: React.FC<DotShapeProps> = ({ dot }) => {
@@ -22,7 +23,10 @@ export const DotShape: React.FC<DotShapeProps> = ({ dot }) => {
         <mesh
             ref={mesh}
             position={[...toWorld(dot.coordinates[1], dot.coordinates[0]), 0]}
-            onClick={() => console.log(dot)}
+            onClick={(e) => {
+                e.stopPropagation();
+                state.selectDot(dot);
+            }}
             onPointerOver={(e) => {
                 e.stopPropagation();
                 setHovered(true);

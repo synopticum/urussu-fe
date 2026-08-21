@@ -13,6 +13,15 @@ class State {
     dots: DotData[] = [];
     objects: ObjectData[] = [];
     paths: PathData[] = [];
+    selectedDot: DotData | null = null;
+
+    selectDot(dot: DotData) {
+        this.selectedDot = dot;
+    }
+
+    closeInfoPanel() {
+        this.selectedDot = null;
+    }
 
     // NOTE: all fetch methods must stay regular methods, not arrow
     // properties — an arrow function would capture the raw (unproxied)

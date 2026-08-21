@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { MathUtils, OrthographicCamera, Vector3 } from 'three';
-import { RtfMapCameraProps } from './types';
+import { Bounds, RtfMapCameraProps } from './types';
 import { DEFAULT_ZOOM, MAX_ZOOM, MIN_ZOOM, PADDING, ZOOM_SPEED } from './constants';
 import { clampToBounds } from './utils';
 
@@ -10,6 +10,7 @@ export const MapCamera: React.FC<RtfMapCameraProps> = ({ bounds }) => {
     const size = useThree((state) => state.size);
     const camera = useThree((state) => state.camera);
     const gl = useThree((state) => state.gl);
+    const fittedBounds = useRef<Bounds | null>(null);
 
     // Fit the data bounds into the viewport with a uniform scale on both axes
     useEffect(() => {
@@ -25,12 +26,19 @@ export const MapCamera: React.FC<RtfMapCameraProps> = ({ bounds }) => {
         const halfW = size.width / scale / 2;
         const halfH = size.height / scale / 2;
 
-        camera.position.set((bounds.minX + bounds.maxX) / 2, (bounds.minY + bounds.maxY) / 2, 1);
+        // Recenter and reset zoom only when the data bounds themselves change.
+        // A mere viewport resize (e.g. the info panel opening) must preserve
+        // the user's current pan and zoom.
+        if (fittedBounds.current !== bounds) {
+            camera.position.set((bounds.minX + bounds.maxX) / 2, (bounds.minY + bounds.maxY) / 2, 1);
+            camera.zoom = DEFAULT_ZOOM;
+            fittedBounds.current = bounds;
+        }
+
         camera.left = -halfW;
         camera.right = halfW;
         camera.top = halfH;
         camera.bottom = -halfH;
-        camera.zoom = DEFAULT_ZOOM;
         camera.updateProjectionMatrix();
     }, [bounds, size, camera]);
 
