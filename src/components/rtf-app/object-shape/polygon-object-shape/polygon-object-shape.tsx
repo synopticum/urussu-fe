@@ -4,6 +4,7 @@ import { BufferGeometry, ShapeGeometry, Vector2, Vector3 } from 'three';
 import { roundedPolygonShape } from './utils';
 import { PolygonObjectShapeProps } from './types';
 import { fillMaterial, OBJECT_STROKE } from '../constants';
+import { CLICK_MAX_DELTA } from '../../constants';
 import { appStore } from '@/stores';
 import { toWorld } from '../../utils';
 import { Highlight } from '../../highlight';
@@ -35,6 +36,8 @@ export const PolygonObjectShape: React.FC<PolygonObjectShapeProps> = ({ object }
                 position={[0, 0, -0.01]}
                 material={fillMaterial}
                 onClick={(e) => {
+                    // Ignore clicks that were actually map drags (see CLICK_MAX_DELTA)
+                    if (e.delta > CLICK_MAX_DELTA) return;
                     e.stopPropagation();
                     appStore.selectEntity({ type: 'object', data: object });
                 }}

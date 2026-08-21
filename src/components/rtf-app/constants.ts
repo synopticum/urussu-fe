@@ -17,6 +17,11 @@ export interface RevealUniforms {
     uPixel: { value: number }; // world units per screen pixel
 }
 
+// Max pointer travel (in screen pixels) between pointerdown and pointerup for
+// an onClick to still count as a click. R3F fires click handlers even after a
+// drag, so every selectable shape checks ThreeEvent.delta against this.
+export const CLICK_MAX_DELTA = 5;
+
 // The mouse starts parked far away until the cursor first enters the canvas
 export const reveal: RevealUniforms = {
     uMouse: { value: new Vector2(1e9, 1e9) },

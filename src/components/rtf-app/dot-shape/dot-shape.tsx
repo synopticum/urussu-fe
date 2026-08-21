@@ -6,6 +6,7 @@ import { DOT_HOVER_SCALE } from './constants';
 import { DotShapeProps } from './types';
 import { HIGHLIGHT_FADE_MS } from '../highlight/constants';
 import { appStore } from '@/stores';
+import { CLICK_MAX_DELTA } from '../constants';
 import { toWorld } from '../utils';
 
 export const DotShape: React.FC<DotShapeProps> = ({ dot }) => {
@@ -24,6 +25,8 @@ export const DotShape: React.FC<DotShapeProps> = ({ dot }) => {
             ref={mesh}
             position={[...toWorld(dot.coordinates[1], dot.coordinates[0]), 0]}
             onClick={(e) => {
+                // Ignore clicks that were actually map drags (see CLICK_MAX_DELTA)
+                if (e.delta > CLICK_MAX_DELTA) return;
                 e.stopPropagation();
                 appStore.selectEntity({ type: 'dot', data: dot });
             }}

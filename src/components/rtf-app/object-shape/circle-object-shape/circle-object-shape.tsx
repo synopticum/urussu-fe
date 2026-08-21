@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { BufferGeometry, EllipseCurve } from 'three';
 import { CircleObjectShapeProps } from './types';
 import { fillMaterial, OBJECT_STROKE, RADIUS_SCALE } from '../constants';
+import { CLICK_MAX_DELTA } from '../../constants';
 import { appStore } from '@/stores';
 import { toWorld } from '../../utils';
 import { Highlight } from '../../highlight';
@@ -25,6 +26,8 @@ export const CircleObjectShape: React.FC<CircleObjectShapeProps> = ({ object }) 
                 position={[0, 0, -0.01]}
                 material={fillMaterial}
                 onClick={(e) => {
+                    // Ignore clicks that were actually map drags (see CLICK_MAX_DELTA)
+                    if (e.delta > CLICK_MAX_DELTA) return;
                     e.stopPropagation();
                     appStore.selectEntity({ type: 'object', data: object });
                 }}

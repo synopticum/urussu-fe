@@ -6,7 +6,7 @@ import { PATH_CORNER_RADIUS } from './constants';
 import { PathShapeProps } from './types';
 import { buildRoundedPath, toWorld } from '../utils';
 import { appStore } from '@/stores';
-import { reveal } from '../constants';
+import { CLICK_MAX_DELTA, reveal } from '../constants';
 
 export const PathShape: React.FC<PathShapeProps> = ({ path }) => {
     // An open line connects the points in array order with rounded corners;
@@ -52,6 +52,8 @@ export const PathShape: React.FC<PathShapeProps> = ({ path }) => {
         <primitive
             object={line}
             onClick={(e: ThreeEvent<MouseEvent>) => {
+                // Ignore clicks that were actually map drags (see CLICK_MAX_DELTA)
+                if (e.delta > CLICK_MAX_DELTA) return;
                 e.stopPropagation();
                 appStore.selectEntity({ type: 'path', data: path });
             }}
