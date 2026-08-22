@@ -15,7 +15,8 @@
             "@/openapi/*": ["./src/openapi/*"],
             "@/pages/*": ["./src/pages/*"],
             "@/stores": ["./src/stores/index.ts"],
-            "@/stores/*": ["./src/stores/*"]
+            "@/stores/*": ["./src/stores/*"],
+            "@/utils/*": ["./src/utils/*"]
         }
     },
     "include": ["src"]

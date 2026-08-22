@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { InfoProps } from './types';
 
+import { getStaticUrl } from '@/utils/get-static-url';
+
 export const Info: React.FC<InfoProps> = ({ entityData }) => {
     const { type, data } = entityData;
 
@@ -21,7 +23,7 @@ export const Info: React.FC<InfoProps> = ({ entityData }) => {
                     <ul className="space-y-2">
                         {data.images.map((image) => {
                             const id = data.id.split('-')[0];
-                            const url = `/images/photos/${type}s/${id}/${image.year}.jpg`;
+                            const url = getStaticUrl(`/photos/${type}s/${id}/${image.year}.jpg`);
 
                             return (
                                 <li key={image.id} className="mb-1 text-xs tracking-wide text-neutral-500">
