@@ -4,6 +4,7 @@ import { appStore } from '@/stores';
 import { IconComment, IconCross } from '../icons';
 import { Comments } from './comments';
 import { Info } from './info';
+import { PhotoOverlay } from './photo-overlay';
 import { state } from './state';
 import { getTitle } from './utils';
 
@@ -19,50 +20,60 @@ export const EntityDetails: React.FC = () => {
     // is clicked for that entity.
     const view = state.entityId === entityId ? state.view : 'info';
 
+    // Same validity rule as the view above: the photo overlay belongs to the
+    // entity it was opened on, so selecting another entity hides it.
+    const photoUrl = state.photo?.entityId === entityId ? state.photo.url : null;
+
     if (!selectedEntity) {
         return null;
     }
 
     return (
-        <aside className="absolute top-0 right-0 flex h-full w-full max-w-[400px] flex-col border-l border-neutral-200 bg-white shadow-sm">
-            <div className="flex items-center justify-between border-b border-neutral-200 p-4">
-                <h2 className="text-sm font-semibold text-neutral-800">{getTitle(selectedEntity)}</h2>
-                <div className="flex items-center gap-1">
-                    <button
-                        type="button"
-                        onClick={() => {
-                            state.entityId = entityId;
-                            state.view = view === 'comments' ? 'info' : 'comments';
-                        }}
-                        className={`rounded p-1 hover:bg-neutral-100 hover:text-neutral-800 ${
-                            view === 'comments' ? 'bg-neutral-100 text-neutral-800' : 'text-neutral-500'
-                        }`}
-                        aria-label="Toggle comments"
-                    >
-                        <IconComment />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            state.entityId = null;
-                            state.view = 'info';
-                            appStore.closeInfoPanel();
-                        }}
-                        className="rounded p-1 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
-                        aria-label="Close panel"
-                    >
-                        <IconCross />
-                    </button>
-                </div>
-            </div>
+        <>
+            {photoUrl && <PhotoOverlay url={photoUrl} />}
 
-            <div className="flex-1 space-y-4 overflow-auto p-4">
-                {view === 'comments' ? (
-                    <Comments entityId={selectedEntity.data.id} />
-                ) : (
-                    <Info entityData={selectedEntity} />
-                )}
-            </div>
-        </aside>
+            <aside className="absolute top-0 right-0 flex h-full w-full max-w-[400px] flex-col border-l border-neutral-200 bg-white shadow-sm">
+                <div className="flex items-center justify-between border-b border-neutral-200 p-4">
+                    <h2 className="text-sm font-semibold text-neutral-800">{getTitle(selectedEntity)}</h2>
+                    <div className="flex items-center gap-1">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                state.entityId = entityId;
+                                state.view = view === 'comments' ? 'info' : 'comments';
+                            }}
+                            className={`rounded p-1 hover:bg-neutral-100 hover:text-neutral-800 ${
+                                view === 'comments' ? 'bg-neutral-100 text-neutral-800' : 'text-neutral-500'
+                            }`}
+                            aria-label="Toggle comments"
+                        >
+                            <IconComment />
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                state.entityId = null;
+                                state.view = 'info';
+                                state.photo = null;
+                                appStore.closeInfoPanel();
+                            }}
+                            className="rounded p-1 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
+                            aria-label="Close panel"
+                        >
+                            <IconCross />
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex-1 space-y-4 overflow-auto p-4">
+                    {view === 'comments' ? (
+                        <Comments entityId={selectedEntity.data.id} />
+                    ) : (
+                        <Info entityData={selectedEntity} />
+                    )}
+                </div>
+            </aside>
+        </>
     );
 };
